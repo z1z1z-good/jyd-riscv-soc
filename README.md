@@ -29,11 +29,45 @@ Template(基线·5级·RV32I+部分F·无预测·未实现)   └ 另挂遗留�
 
 ---
 
-## 如何恢复 / 重建（接口路径）
-1. **Vivado 2023.2**（原构建版本；本机装在 `D:\Vivado\Vivado\2023.2`，xsim/xelab/xvlog/vivado.bat 齐）。
-2. `git clone` 本仓 → Vivado 打开对应 `*/digital_twin.xpr`（coremark 为 `*/riscv_coremark.xpr`）。
-3. 打开后 Vivado 提示 IP 需重新生成 → **Generate Output Products** / 直接综合，`.gen/.cache/.runs` 自动重建（这就是 4.7 GB 的来源，均可再生）。
-4. **仿真**：sim_1 里的 testbench（`top_tb.v` / `tb_top.v`）。**模板可直接跑**——其程序 `test.hex` 在 `imports/test_src/`（仅需把 `rom.v` 的 `$readmemh` 硬编码绝对路径改成该相对路径）；A/B/coremark 需自备 `final.hex`（见 study §7 E2）。
+## 🔄 从零取回与重建（假设本地已全部删除，什么都不记得也能照做）
+
+**① 取回源码（约 20 MB，秒级）**
+```
+git clone https://github.com/z1z1z-good/jyd-riscv-soc.git
+```
+克隆下来只有源码 + 分析文档 + 关键报告，**没有任何 Vivado 构建产物**。
+
+**② 用 Vivado 打开工程**
+- 版本 **Vivado 2023.2**（原构建版本；本机曾装在 `D:\Vivado\Vivado\2023.2`，xsim/xelab/xvlog/vivado.bat 齐）。
+- 打开工程文件：数字孪生三工程 = `<工程>/digital_twin.xpr`；CoreMark 两工程 = `<工程>/riscv_coremark.xpr`。
+- 打开后会提示 IP / 输出产物缺失或过期（因 `.gen/.cache` 未入库）——**正常现象**，见下一步。
+
+**③ 未上传部分如何再生（那 4.7 GB 构建产物全部可自动重建）**
+被 `.gitignore` 排除的都是**工具生成物**，不含任何手写内容：
+
+| 排除目录 | 是什么 | 如何再生 |
+|---|---|---|
+| `*.gen` | 各 IP 生成的 HDL / 仿真模型 / 网表 | 由 `.srcs` 里的 `.xci` 定义生成 |
+| `*.cache` | ModelSim 仿真库 + IP 离线综合缓存 | 综合时自动生成 |
+| `*.runs` | 综合 / 实现运行目录 + 报告 | 跑 synth / impl 生成 |
+| `.Xil` `*.log` `*.jou` `*.str` | 临时 / 日志 / 崩溃转储 | 运行自动产生 |
+
+- **GUI**：Sources 面板右键任一 IP → *Generate Output Products*；再 *Run Synthesis* / *Run Implementation*（或直接 *Generate Bitstream* 连带全做）。
+- **Tcl 一键**（Vivado Tcl Console）：
+```tcl
+open_project <工程>.xpr
+upgrade_ip          [get_ips *]     ;# 需要时升级 IP
+generate_target all [get_ips *]     ;# 重生成所有 IP 输出产物（.gen）
+launch_runs synth_1 -jobs 8 ; wait_on_run synth_1
+launch_runs impl_1  -jobs 8 ; wait_on_run impl_1
+```
+重建后每个数字孪生工程会重新长回约 1 GB（`cache≈800MB` + `gen≈160MB`），属正常。
+
+**④ 仿真（要跑运行结果时）**
+- **模板可直接跑**：程序 `test.hex` 已在 `imports/test_src/`；只需把 `rom.v` 的 `$readmemh` 硬编码绝对路径改成该相对路径，即可 xsim 跑 `top_tb`。
+- **A / B / CoreMark 需自备 `final.hex`**（原在作者机器 `D:\final.hex`，未入库）；放回 `rom.v` 指定路径即可。详见 study §7 E2。
+
+**⑤ 不想重跑也能查数据**：`reports/{200M,250M}/` 已存好当时的 timing / util / power 报告 + 250M 的 retiming 日志；`study` / `comparison` 文档的结论据此得出，重拾时直接看即可，不必重新 implement。
 
 ## 分析方法（供复现 / 扩展）
 - **硬数据**：各 `digital_twin.runs/impl_1/` 的 `top_utilization_placed.rpt` / `top_power_routed.rpt` / `top_timing_summary_routed.rpt` + `runme.log`（抓 `WNS=` 行）。已挑关键报告放入 `reports/`。
