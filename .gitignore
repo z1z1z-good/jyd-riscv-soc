@@ -1,0 +1,35 @@
+# Vivado 构建产物（全部可由 .xpr + .xci 重新生成，故不入库）
+*.cache/
+*.gen/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.runs/
+.Xil/
+.jobs/
+
+# 日志 / 崩溃转储 / 备份 / 波形 / 检查点
+*.jou
+*.log
+*.str
+*.backup.*
+*.wdb
+*.pb
+*.os
+*.dcp
+hs_err_pid*
+vivado_pid*
+vivado_*.backup.*
+
+# 但保留 reports/ 下人工挑选的日志（否则被上面的 *.log 忽略）
+!reports/**/*.log
+
+# 原始打包（如仍存在）
+*.zip
+
+# 说明：以下**保留入库**——
+#   */digital_twin.srcs/  与  riscv_coremark*/**/*.srcs/ （RTL/约束/仿真/IP定义.xci/初始化.coe/.hex/test.hex）
+#   *.xpr（工程文件）
+#   reports/（人工挑选的关键实现报告）
+#   *.md（分析文档）、README、docs/
+# 关键报告放在 reports/ 顶层目录（不在被忽略的 *.runs/ 内），故正常入库。

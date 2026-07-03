@@ -1,0 +1,114 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2023/06/15 14:15:46
+// Design Name: 
+// Module Name: id_ex
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+`include "defines.v"
+
+// 将译码结果打�?拍后向EX模块传�??
+module id_ex(
+
+    input   wire                     clk               ,
+    input   wire                     rst_n             ,
+                                                       
+    input   wire[2:0]                hold_flag_i       ,
+	input	wire                     keep_flag_i       ,
+    
+    input   wire[`INST_DATA_BUS]     ins_i             , 
+    input   wire[`INST_ADDR_BUS]     ins_addr_i        ,
+    input   wire[`INST_REG_DATA]     reg1_rd_data_i    , 
+    input   wire[`INST_REG_DATA]     reg2_rd_data_i    ,
+    input   wire[`INST_REG_DATA]     reg1_rd_data_fp_i    , 
+    input   wire[`INST_REG_DATA]     reg2_rd_data_fp_i    ,    
+    input   wire[`INST_REG_ADDR]     reg_wr_addr_i     ,
+    input   wire[`INST_REG_DATA]     imm_i             ,
+    input   wire[`INST_REG_DATA]     csr_rd_data_i     ,
+    input   wire[`INST_ADDR_BUS]     csr_rw_addr_i     ,
+    input   wire[`INST_REG_DATA]     csr_zimm_i        ,    
+    
+    output  reg [`INST_DATA_BUS]     ins_o             ,      
+    output  reg [`INST_ADDR_BUS]     ins_addr_o        ,
+    output  reg [`INST_REG_DATA]     reg1_rd_data_o    , 
+    output  reg [`INST_REG_DATA]     reg2_rd_data_o    , 
+    output  reg [`INST_REG_DATA]     reg1_rd_data_fp_o    , 
+    output  reg [`INST_REG_DATA]     reg2_rd_data_fp_o    ,    
+    output  reg [`INST_REG_ADDR]     reg_wr_addr_o     ,
+    output  reg [`INST_REG_DATA]     imm_o             ,
+    output  reg [`INST_REG_DATA]     csr_rd_data_o     ,
+    output  reg [`INST_ADDR_BUS]     csr_rw_addr_o     ,
+    output  reg [`INST_REG_DATA]     csr_zimm_o        
+                                                       
+    
+    );
+
+    always @ (posedge clk or negedge rst_n) begin
+        if(!rst_n) begin
+            ins_o <= `INS_NOP;
+            ins_addr_o <= `RESET_ADDR;
+            reg1_rd_data_o <= `ZERO_WORD;
+            reg2_rd_data_o <= `ZERO_WORD; 
+            reg1_rd_data_fp_o <= `ZERO_WORD;
+            reg2_rd_data_fp_o <= `ZERO_WORD;            
+            reg_wr_addr_o <= `ZERO_REG_ADDR;   
+            imm_o <= `ZERO_WORD;
+            csr_rw_addr_o <= `ZERO_WORD;
+            csr_zimm_o <= `ZERO_WORD;
+            csr_rd_data_o <= `ZERO_WORD;
+        end
+        else if((hold_flag_i >= `HOLD_ID_EX)) begin
+            ins_o <= `INS_NOP;
+            ins_addr_o <= `RESET_ADDR;
+            reg1_rd_data_o <= `ZERO_WORD;
+            reg2_rd_data_o <= `ZERO_WORD;  
+            reg1_rd_data_fp_o <= `ZERO_WORD;
+            reg2_rd_data_fp_o <= `ZERO_WORD;          
+            reg_wr_addr_o <= `ZERO_REG_ADDR;   
+            imm_o <= `ZERO_WORD;   
+            csr_rw_addr_o <= `ZERO_WORD;
+            csr_zimm_o <= `ZERO_WORD;
+            csr_rd_data_o <= `ZERO_WORD;
+        end
+		else if(keep_flag_i) begin
+            ins_o <= ins_o;
+            ins_addr_o <= ins_addr_o;
+            reg1_rd_data_o <= reg1_rd_data_i;
+            reg2_rd_data_o <= reg2_rd_data_i; 
+            reg1_rd_data_fp_o <= reg1_rd_data_fp_i;
+            reg2_rd_data_fp_o <= reg2_rd_data_fp_i;              
+            reg_wr_addr_o <= reg_wr_addr_o;   
+            imm_o <= imm_o;   
+            csr_rw_addr_o <= csr_rw_addr_o;
+            csr_zimm_o <= csr_zimm_o;
+            csr_rd_data_o <= csr_rd_data_i;
+        end
+        else begin
+            ins_o <= ins_i;
+            ins_addr_o <= ins_addr_i;
+            reg1_rd_data_o <= reg1_rd_data_i;
+            reg2_rd_data_o <= reg2_rd_data_i;
+            reg1_rd_data_fp_o <= reg1_rd_data_fp_i;
+            reg2_rd_data_fp_o <= reg2_rd_data_fp_i;            
+            reg_wr_addr_o <= reg_wr_addr_i;
+            imm_o <= imm_i;
+            csr_rw_addr_o <= csr_rw_addr_i;
+            csr_zimm_o <= csr_zimm_i;
+            csr_rd_data_o <= csr_rd_data_i;
+        end
+    end
+    
+endmodule

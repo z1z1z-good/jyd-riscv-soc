@@ -1,0 +1,12 @@
+set_property PACKAGE_PIN AD12 [get_ports i_sys_clk_p]
+set_property PACKAGE_PIN E15 [get_ports sys_rsrt_n]
+set_property PACKAGE_PIN D18 [get_ports uart_rx]
+set_property PACKAGE_PIN D17 [get_ports uart_tx]
+set_property IOSTANDARD LVCMOS33 [get_ports uart_rx]
+set_property IOSTANDARD LVCMOS33 [get_ports uart_tx]
+set_property IOSTANDARD LVCMOS33 [get_ports sys_rsrt_n]
+set_property IOSTANDARD DIFF_HSTL_II_18 [get_ports i_sys_clk_p]
+set_property IOSTANDARD DIFF_HSTL_II_18 [get_ports i_sys_clk_n]
+
+set_property IOSTANDARD LVCMOS33 [get_ports sys_rst_n]
+set_property PACKAGE_PIN E15 [get_ports sys_rst_n]
