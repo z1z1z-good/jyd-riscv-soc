@@ -12,12 +12,21 @@
 | `comparison_200M_vs_250M.md` | A(200M) vs B(250M) 聚焦深挖（§0–§8） |
 | `reports/{200M,250M}/` | 关键实现报告：`top_timing_summary_routed.rpt` / `top_utilization_placed.rpt` / `top_power_routed.rpt` + 250M 的 `runme.log`（记录 WNS −0.052→+0.035 的 retiming 收敛） |
 | `docs/jyd-memory-note.md` | 分析要点速记 |
+| `_archive_restore_only/` | 上游 `98f3aab` 的 200M/250M 原版恢复快照；仅用于追溯和恢复，不参与正常工程 |
 | `JYD2025_Contest-Template0005/` | 赛方基线模板（源码；未实现） |
 | `five_level_200MHz_with_all_branch/` | A：5 级 + 锦标赛预测（CPU 150 MHz） |
 | `five_level_area_250M/` | B：7 级深流水 + 单表预测 + MEM_BUFFER retiming（CPU 250 MHz） |
 | `riscv_coremark/` `riscv_coremark1/` | B 血统核抽出的 CoreMark 跑分工程（缺固件，近重复） |
 
 > 每个工程只入库其 `*.srcs/`（RTL / 约束 / 仿真 tb / IP 定义 `.xci` / 初始化 `.coe`/`.hex`/`test.hex`）与 `.xpr`。
+
+## 源码管理与原版恢复区
+
+- 顶层 `five_level_200MHz_with_all_branch/` 与 `five_level_area_250M/` 是唯一的日常开发、仿真和综合入口。
+- 两个有效工程的源码统一放在 `digital_twin.srcs/sources_1/rtl/`，CPU 内核统一放在 `rtl/cpu/`。
+- `_archive_restore_only/source-98f3aab/` 保存整理前的逐文件原版快照；该目录不得加入有效 XPR，也不在其中继续开发。
+- 原版快照由 SHA-256 清单保护，并被 GitHub 标记为 generated，以便与有效源码隔离。
+- 提交前运行 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\check-projects.ps1`，同时检查有效 XPR 引用与归档完整性。
 
 ## 工程族谱（详见 study 文档 §1）
 ```

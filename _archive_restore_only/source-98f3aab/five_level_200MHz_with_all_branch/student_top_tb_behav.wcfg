@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="top_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="top_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="5,778.211 ns"></ZoomStartTime>
+      <ZoomEndTime time="5,831.512 ns"></ZoomEndTime>
+      <Cursor1Time time="5,779.611 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="188"></NameColumnWidth>
+      <ValueColumnWidth column_width="107"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="100" />
+   <wave_markers>
+      <marker time="5814250" label="" />
+      <marker time="5715975" label="" />
+      <marker time="8275000" label="" />
+   </wave_markers>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/hold_flag_i" type="array">
+      <obj_property name="ElementShortName">hold_flag_i[2:0]</obj_property>
+      <obj_property name="ObjectShortName">hold_flag_i[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/jump_addr_i" type="array">
+      <obj_property name="ElementShortName">jump_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">jump_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/pred_target" type="array">
+      <obj_property name="ElementShortName">pred_target[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pred_target[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/pred_taken" type="logic">
+      <obj_property name="ElementShortName">pred_taken</obj_property>
+      <obj_property name="ObjectShortName">pred_taken</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/jump_flag_i" type="logic">
+      <obj_property name="ElementShortName">jump_flag_i</obj_property>
+      <obj_property name="ObjectShortName">jump_flag_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/keep_flag_i" type="logic">
+      <obj_property name="ElementShortName">keep_flag_i</obj_property>
+      <obj_property name="ObjectShortName">keep_flag_i</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/pc_o" type="array">
+      <obj_property name="ElementShortName">pc_o[13:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_o[13:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/jump_addr" type="array">
+      <obj_property name="ElementShortName">jump_addr[13:0]</obj_property>
+      <obj_property name="ObjectShortName">jump_addr[13:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_IF_UNIT/u_pc/pre_addr" type="array">
+      <obj_property name="ElementShortName">pre_addr[13:0]</obj_property>
+      <obj_property name="ObjectShortName">pre_addr[13:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/virtual_seg" type="array">
+      <obj_property name="ElementShortName">virtual_seg[39:0]</obj_property>
+      <obj_property name="ObjectShortName">virtual_seg[39:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/actual_jump_flag" type="logic">
+      <obj_property name="ElementShortName">actual_jump_flag</obj_property>
+      <obj_property name="ObjectShortName">actual_jump_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/actual_jump_addr" type="array">
+      <obj_property name="ElementShortName">actual_jump_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">actual_jump_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/pc_from_if" type="array">
+      <obj_property name="ElementShortName">pc_from_if[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_from_if[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/pc_from_ex" type="array">
+      <obj_property name="ElementShortName">pc_from_ex[31:0]</obj_property>
+      <obj_property name="ObjectShortName">pc_from_ex[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/predict_taken" type="logic">
+      <obj_property name="ElementShortName">predict_taken</obj_property>
+      <obj_property name="ObjectShortName">predict_taken</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/predict_target" type="array">
+      <obj_property name="ElementShortName">predict_target[31:0]</obj_property>
+      <obj_property name="ObjectShortName">predict_target[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/BTB" type="array">
+      <obj_property name="ElementShortName">BTB[0:63][31:0]</obj_property>
+      <obj_property name="ObjectShortName">BTB[0:63][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/BTB_TAG" type="array">
+      <obj_property name="ElementShortName">BTB_TAG[0:63][5:0]</obj_property>
+      <obj_property name="ObjectShortName">BTB_TAG[0:63][5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/BTB_VALID" type="array">
+      <obj_property name="ElementShortName">BTB_VALID[63:0]</obj_property>
+      <obj_property name="ObjectShortName">BTB_VALID[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/PHT" type="array">
+      <obj_property name="ElementShortName">PHT[0:63][1:0]</obj_property>
+      <obj_property name="ObjectShortName">PHT[0:63][1:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/expc" type="array">
+      <obj_property name="ElementShortName">expc[5:0]</obj_property>
+      <obj_property name="ObjectShortName">expc[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/ifpc" type="array">
+      <obj_property name="ElementShortName">ifpc[5:0]</obj_property>
+      <obj_property name="ObjectShortName">ifpc[5:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/i" type="array">
+      <obj_property name="ElementShortName">i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_AREA_PREDICTOR/is_branch" type="logic">
+      <obj_property name="ElementShortName">is_branch</obj_property>
+      <obj_property name="ObjectShortName">is_branch</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/actual_taken" type="logic">
+      <obj_property name="ElementShortName">actual_taken</obj_property>
+      <obj_property name="ObjectShortName">actual_taken</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/actual_target" type="array">
+      <obj_property name="ElementShortName">actual_target[31:0]</obj_property>
+      <obj_property name="ObjectShortName">actual_target[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/predict_taken" type="logic">
+      <obj_property name="ElementShortName">predict_taken</obj_property>
+      <obj_property name="ObjectShortName">predict_taken</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/jump_flag" type="logic">
+      <obj_property name="ElementShortName">jump_flag</obj_property>
+      <obj_property name="ObjectShortName">jump_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/jump_flag_o" type="logic">
+      <obj_property name="ElementShortName">jump_flag_o</obj_property>
+      <obj_property name="ObjectShortName">jump_flag_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/is_branch" type="logic">
+      <obj_property name="ElementShortName">is_branch</obj_property>
+      <obj_property name="ObjectShortName">is_branch</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/keep_flag_o" type="logic">
+      <obj_property name="ElementShortName">keep_flag_o</obj_property>
+      <obj_property name="ObjectShortName">keep_flag_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/ins_addr_i" type="array">
+      <obj_property name="ElementShortName">ins_addr_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ins_addr_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/opcode_i" type="array">
+      <obj_property name="ElementShortName">opcode_i[6:0]</obj_property>
+      <obj_property name="ObjectShortName">opcode_i[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/funct3_i" type="array">
+      <obj_property name="ElementShortName">funct3_i[2:0]</obj_property>
+      <obj_property name="ObjectShortName">funct3_i[2:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/funct7_i" type="array">
+      <obj_property name="ElementShortName">funct7_i[6:0]</obj_property>
+      <obj_property name="ObjectShortName">funct7_i[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/imm_i" type="array">
+      <obj_property name="ElementShortName">imm_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imm_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/jump_addr_o" type="array">
+      <obj_property name="ElementShortName">jump_addr_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">jump_addr_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/hold_flag_o" type="logic">
+      <obj_property name="ElementShortName">hold_flag_o</obj_property>
+      <obj_property name="ObjectShortName">hold_flag_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg1_rd_data_i" type="array">
+      <obj_property name="ElementShortName">reg1_rd_data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg1_rd_data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg2_rd_data_i" type="array">
+      <obj_property name="ElementShortName">reg2_rd_data_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg2_rd_data_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg_wr_addr_i" type="array">
+      <obj_property name="ElementShortName">reg_wr_addr_i[4:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_wr_addr_i[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg_wr_en_o" type="logic">
+      <obj_property name="ElementShortName">reg_wr_en_o</obj_property>
+      <obj_property name="ObjectShortName">reg_wr_en_o</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg_wr_addr_o" type="array">
+      <obj_property name="ElementShortName">reg_wr_addr_o[4:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_wr_addr_o[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg_wr_data_o" type="array">
+      <obj_property name="ElementShortName">reg_wr_data_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_wr_data_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg1_rd_addr_i" type="array">
+      <obj_property name="ElementShortName">reg1_rd_addr_i[4:0]</obj_property>
+      <obj_property name="ObjectShortName">reg1_rd_addr_i[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg2_rd_addr_i" type="array">
+      <obj_property name="ElementShortName">reg2_rd_addr_i[4:0]</obj_property>
+      <obj_property name="ObjectShortName">reg2_rd_addr_i[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/not_mem" type="logic">
+      <obj_property name="ElementShortName">not_mem</obj_property>
+      <obj_property name="ObjectShortName">not_mem</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/keep_flag_return" type="logic">
+      <obj_property name="ElementShortName">keep_flag_return</obj_property>
+      <obj_property name="ObjectShortName">keep_flag_return</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/jump_addr" type="array">
+      <obj_property name="ElementShortName">jump_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">jump_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/hold_flag" type="logic">
+      <obj_property name="ElementShortName">hold_flag</obj_property>
+      <obj_property name="ObjectShortName">hold_flag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg_wr_addr_eq_reg1_rd_addr" type="logic">
+      <obj_property name="ElementShortName">reg_wr_addr_eq_reg1_rd_addr</obj_property>
+      <obj_property name="ObjectShortName">reg_wr_addr_eq_reg1_rd_addr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg_wr_addr_eq_reg2_rd_addr" type="logic">
+      <obj_property name="ElementShortName">reg_wr_addr_eq_reg2_rd_addr</obj_property>
+      <obj_property name="ObjectShortName">reg_wr_addr_eq_reg2_rd_addr</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg1_equal_reg2" type="logic">
+      <obj_property name="ElementShortName">reg1_equal_reg2</obj_property>
+      <obj_property name="ObjectShortName">reg1_equal_reg2</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg1_less_reg2_signed" type="logic">
+      <obj_property name="ElementShortName">reg1_less_reg2_signed</obj_property>
+      <obj_property name="ObjectShortName">reg1_less_reg2_signed</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/reg1_less_reg2_unsigned" type="logic">
+      <obj_property name="ElementShortName">reg1_less_reg2_unsigned</obj_property>
+      <obj_property name="ObjectShortName">reg1_less_reg2_unsigned</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/branch_jump_addr" type="array">
+      <obj_property name="ElementShortName">branch_jump_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">branch_jump_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/jump_addr_branch" type="array">
+      <obj_property name="ElementShortName">jump_addr_branch[31:0]</obj_property>
+      <obj_property name="ObjectShortName">jump_addr_branch[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/add_1_imm" type="array">
+      <obj_property name="ElementShortName">add_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">add_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/shamt" type="array">
+      <obj_property name="ElementShortName">shamt[4:0]</obj_property>
+      <obj_property name="ObjectShortName">shamt[4:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/add_1_2" type="array">
+      <obj_property name="ElementShortName">add_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">add_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/sub_1_2" type="array">
+      <obj_property name="ElementShortName">sub_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sub_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/slti_1_imm" type="array">
+      <obj_property name="ElementShortName">slti_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">slti_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/sltiu_1_imm" type="array">
+      <obj_property name="ElementShortName">sltiu_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sltiu_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/xori_1_imm" type="array">
+      <obj_property name="ElementShortName">xori_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">xori_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/ori_1_imm" type="array">
+      <obj_property name="ElementShortName">ori_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ori_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/andi_1_imm" type="array">
+      <obj_property name="ElementShortName">andi_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">andi_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/slli_1_imm" type="array">
+      <obj_property name="ElementShortName">slli_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">slli_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/srli_1_imm" type="array">
+      <obj_property name="ElementShortName">srli_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">srli_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/srai_1_imm" type="array">
+      <obj_property name="ElementShortName">srai_1_imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">srai_1_imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/sll_1_2" type="array">
+      <obj_property name="ElementShortName">sll_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sll_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/slt_1_2" type="array">
+      <obj_property name="ElementShortName">slt_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">slt_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/sltu_1_2" type="array">
+      <obj_property name="ElementShortName">sltu_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sltu_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/xor_1_2" type="array">
+      <obj_property name="ElementShortName">xor_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">xor_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/srl_1_2" type="array">
+      <obj_property name="ElementShortName">srl_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">srl_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/sra_1_2" type="array">
+      <obj_property name="ElementShortName">sra_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">sra_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/or_1_2" type="array">
+      <obj_property name="ElementShortName">or_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">or_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/u_cu/and_1_2" type="array">
+      <obj_property name="ElementShortName">and_1_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">and_1_2[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/student_top_inst/u_RISCV_CORE/INST_EX_UNIT/ins_i" type="array">
+      <obj_property name="ElementShortName">ins_i[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ins_i[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/i_sys_clk_p" type="logic">
+      <obj_property name="ElementShortName">i_sys_clk_p</obj_property>
+      <obj_property name="ObjectShortName">i_sys_clk_p</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/i_sys_clk_n" type="logic">
+      <obj_property name="ElementShortName">i_sys_clk_n</obj_property>
+      <obj_property name="ObjectShortName">i_sys_clk_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/i_uart_rx" type="logic">
+      <obj_property name="ElementShortName">i_uart_rx</obj_property>
+      <obj_property name="ObjectShortName">i_uart_rx</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/o_uart_tx" type="logic">
+      <obj_property name="ElementShortName">o_uart_tx</obj_property>
+      <obj_property name="ObjectShortName">o_uart_tx</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/virtual_led" type="array">
+      <obj_property name="ElementShortName">virtual_led[31:0]</obj_property>
+      <obj_property name="ObjectShortName">virtual_led[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/virtual_seg" type="array">
+      <obj_property name="ElementShortName">virtual_seg[39:0]</obj_property>
+      <obj_property name="ObjectShortName">virtual_seg[39:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/w_clk_50Mhz" type="logic">
+      <obj_property name="ElementShortName">w_clk_50Mhz</obj_property>
+      <obj_property name="ObjectShortName">w_clk_50Mhz</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/cpu_clk" type="logic">
+      <obj_property name="ElementShortName">cpu_clk</obj_property>
+      <obj_property name="ObjectShortName">cpu_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/w_clk_rst" type="logic">
+      <obj_property name="ElementShortName">w_clk_rst</obj_property>
+      <obj_property name="ObjectShortName">w_clk_rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/virtual_key" type="array">
+      <obj_property name="ElementShortName">virtual_key[7:0]</obj_property>
+      <obj_property name="ObjectShortName">virtual_key[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/virtual_sw" type="array">
+      <obj_property name="ElementShortName">virtual_sw[63:0]</obj_property>
+      <obj_property name="ObjectShortName">virtual_sw[63:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/rx_data" type="array">
+      <obj_property name="ElementShortName">rx_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">rx_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/rx_ready" type="logic">
+      <obj_property name="ElementShortName">rx_ready</obj_property>
+      <obj_property name="ObjectShortName">rx_ready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/tx_start" type="logic">
+      <obj_property name="ElementShortName">tx_start</obj_property>
+      <obj_property name="ObjectShortName">tx_start</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/tx_data" type="array">
+      <obj_property name="ElementShortName">tx_data[7:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_data[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_tb/uut/tx_busy" type="logic">
+      <obj_property name="ElementShortName">tx_busy</obj_property>
+      <obj_property name="ObjectShortName">tx_busy</obj_property>
+   </wvobject>
+</wave_config>

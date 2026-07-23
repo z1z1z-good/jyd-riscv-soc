@@ -18,7 +18,6 @@
 // Additional Comments:
 // (* keep_hierarchy="yes", optimize="off" *)
 //////////////////////////////////////////////////////////////////////////////////
-(* keep_hierarchy="yes", optimize="off" *)
 module perip_bridge(
     input  logic         clk				,
     input  logic         cnt_clk			,
@@ -52,7 +51,7 @@ end
     localparam CNT_ADDR  = 32'h8020_0050;  // counter
 
     logic [31:0] LED;
-    (* preserve = "true", keep = "true" *)logic [31:0] seg_wdata, cnt_rdata, mmio_rdata, dram_rdata;
+    logic [31:0] seg_wdata, cnt_rdata, mmio_rdata, dram_rdata;
     (* dont_touch = "true", keep = "true" *)logic [39:0] seg_output;
     // we don't care perip_mask in LED, SEG, SW & KEY, only care in DRAM
     // write process

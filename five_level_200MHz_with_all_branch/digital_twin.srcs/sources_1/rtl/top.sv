@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-(* keep_hierarchy="yes", optimize="off" *)
 module top(
     input  wire i_sys_clk_p         ,
     input  wire i_sys_clk_n         ,

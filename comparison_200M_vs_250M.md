@@ -138,7 +138,7 @@ BRAM读出 →[mem_wr_buffer: 30bit地址比较 + store-to-load mux, 组合(A):3
 ---
 
 ### 附：证据文件锚点（关键位点）
-- IF2 注释：`five_level_200MHz_with_all_branch/.../rtl_full2/top/RISCV.v:142-152`
+- IF2 注释：`_archive_restore_only/source-98f3aab/five_level_200MHz_with_all_branch/.../new/rtl_full2/top/RISCV.v:142-152`
 - 指令字组合↔寄存：`.../core/if_id.v:67-69`（A） vs `five_level_area_250M/.../core/if_id.v:48-61`（B）
 - 访存切拍：`five_level_area_250M/.../core/mem_wr_buffer.v:40-50`
 - 新增缓冲级：`.../top/MEM_BUFFER.v` + `.../top/RISCV.v:245-268`

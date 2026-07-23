@@ -18,7 +18,6 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-(* keep_hierarchy="yes", optimize="off" *)
 module student_top#(
     parameter                           P_SW_CNT            = 64,
     parameter                           P_LED_CNT           = 32,
@@ -36,13 +35,12 @@ module student_top#(
 );
 
     // IROM
-    logic [31:0] pc;
-    logic [15:0] inst_addr;
+    logic [13:0] pc;
+    logic [11:0] inst_addr;
     logic [31:0] instruction;
     
     //RISCV
     logic        wr_perip_req_o;
-    logic        rd_perip_req_o;    
     logic [31:0] wr_addr_o;
     logic [31:0] rd_addr_o;
          
@@ -58,7 +56,7 @@ module student_top#(
     //                    rd_addr_o;    
 
     // 16KB = 2^12 * 32bit
-    assign inst_addr = pc[17:2];
+    assign inst_addr = pc[13:2];
 
   //  myCPU Core_cpu (
   //      .cpu_rst            (w_clk_rst),
@@ -79,25 +77,20 @@ module student_top#(
     RISCV u_RISCV_CORE(
         .clk               (w_cpu_clk),
         .rst_n             (~w_clk_rst),
-        .rib_hold_flag_i   (1'b0),
-        .int_flag_i        (1'b1),
         .pc_o              (pc),
         .ins_i             (instruction),
-        .mem_wr_rib_req_o  (wr_perip_req_o),
         .mem_wr_en_o       (perip_wen),
         .mem_wr_addr_o     (wr_addr_o),
         .mem_wr_data_o     (perip_wdata),
-        .mem_rd_rib_req_o  (rd_perip_req_o),
         .mem_rd_addr_o     (rd_addr_o),
         .mem_rd_data_i     (perip_rdata)
     );    
 
-    rom Mem_IROM (
-        .clk          (w_cpu_clk),
-        .rst_n        (~w_clk_rst),
+    //IBROM Mem_IROM (w_cpu_clk , inst_addr ,instruction );
+    IROM Mem_IROM({2'b0,inst_addr},instruction);
+/*         .clk          (w_cpu_clk),
         .pc_addr_i    (inst_addr),
-        .ins_o        (instruction)
-    );
+        .ins_o        (instruction) */
     
     perip_bridge bridge_inst (
         .clk				(w_cpu_clk),

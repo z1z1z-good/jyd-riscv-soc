@@ -1,5 +1,7 @@
 # JYD RISC-V SoC 分析要点速记
 
+> 当前路径：200M/250M 的有效 CPU 已统一为 `digital_twin.srcs/sources_1/rtl/cpu`；文中的 `rtl_full2` 是历史架构称呼，旧目录实物保存在 `_archive_restore_only/source-98f3aab/`。
+
 > 从分析记忆中摘出的 JYD 技术要点(已脱敏:不含其它项目、内网信息、私密内容)。完整内容见 `study_riscv_soc_family.md`。
 
 ## 工程集

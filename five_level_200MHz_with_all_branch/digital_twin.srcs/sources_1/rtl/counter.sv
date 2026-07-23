@@ -32,13 +32,15 @@ module counter(
     logic [31:0] cnt_ms;
     logic start;
 
-    always_ff @(posedge clk) begin
+    always@(*) begin
         if (rst) begin
-            start <= 0;
+            start = 1;
         end else if (cnt_wen & perip_wdata == 32'h8000_0000) begin
-            start <= 1;
+            start = 1;
         end else if (cnt_wen & perip_wdata == 32'hFFFF_FFFF) begin
-            start <= 0;
+            start = 0;
+        end else begin
+            start = start ;
         end
     end
 

@@ -18,7 +18,6 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-(* keep_hierarchy="yes", optimize="off" *)
 module student_top#(
     parameter                           P_SW_CNT            = 64,
     parameter                           P_LED_CNT           = 32,
@@ -36,8 +35,8 @@ module student_top#(
 );
 
     // IROM
-    logic [31:0] pc;
-    logic [15:0] inst_addr;
+    logic [13:0] pc;
+    logic [11:0] inst_addr;
     logic [31:0] instruction;
     
     //RISCV
@@ -58,7 +57,7 @@ module student_top#(
     //                    rd_addr_o;    
 
     // 16KB = 2^12 * 32bit
-    assign inst_addr = pc[17:2];
+    assign inst_addr = pc[13:2];
 
   //  myCPU Core_cpu (
   //      .cpu_rst            (w_clk_rst),
@@ -92,12 +91,11 @@ module student_top#(
         .mem_rd_data_i     (perip_rdata)
     );    
 
-    rom Mem_IROM (
-        .clk          (w_cpu_clk),
-        .rst_n        (~w_clk_rst),
+    //IBROM Mem_IROM (w_cpu_clk , inst_addr ,instruction );
+    dist_mem_gen_1 Mem_IROM(inst_addr,w_cpu_clk,instruction);
+/*         .clk          (w_cpu_clk),
         .pc_addr_i    (inst_addr),
-        .ins_o        (instruction)
-    );
+        .ins_o        (instruction) */
     
     perip_bridge bridge_inst (
         .clk				(w_cpu_clk),

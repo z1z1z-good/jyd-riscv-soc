@@ -1,5 +1,7 @@
 # JYD 集创赛 RISC-V SoC 工程族 · 技术研究底本
 
+> 路径管理说明（2026-07-23）：A/200M 与 B/250M 的有效内核已由历史目录 `new/rtl_full2` 统一迁移到 `digital_twin.srcs/sources_1/rtl/cpu`。本文中的 `rtl_full2` 若表示架构血统则保留原称；已经删除的旧树和死码请到 `_archive_restore_only/source-98f3aab/` 查证。
+
 > **用途**：`D:\JYD` 下五个工程的族谱级技术存档，供将来重拾时快速恢复"深入掌握"。
 > **方法**：实现报告实测 + RTL 亲自核验 + 三个独立分析代理（分支预测 / 流水线访存 / 模板基线）交叉验证。
 > **配套**：本文件是主文档；`comparison_200M_vs_250M.md` 是 A vs B 的聚焦深挖（本文 §3.2/§3.3/§5 已吸收其结论）。
@@ -150,8 +152,8 @@ Template(基线 · 5级 IF/ID/EX/MEM/WB · RV32I+部分F · 无预测/无缓冲 
 | 模板核排除证据 | `Template/.../digital_twin.xpr:157`（rtl_full 仅 defines.v） |
 | 模板 FPU 例化 | `Template/.../rtl_full2/core/cu.v:220/235/247`；双寄存器堆 `RF_UNIT.v:55/75` |
 | 遗留核 RV32IM | `Template/.../rtl_full/top/RISCV_CORE.v`+`EXU.v:242-250`（mul/div）+`:178`(clint) |
-| A 锦标赛预测器 | `A/.../rtl_full2/top/{bpu,CPT,GLOBAL_PREDICTOR,AREA_PREDICTOR}.v` |
-| A IF2 注释死码 | `A/.../rtl_full2/top/RISCV.v:142-152` |
+| A 锦标赛预测器 | `five_level_200MHz_with_all_branch/.../rtl/cpu/top/{bpu,CPT,GLOBAL_PREDICTOR,AREA_PREDICTOR}.v` |
+| A IF2 注释死码 | `_archive_restore_only/source-98f3aab/five_level_200MHz_with_all_branch/.../new/rtl_full2/top/RISCV.v:142-152` |
 | A/B if_id 组合↔寄存 | `A/.../core/if_id.v:67-69` vs `B/.../core/if_id.v:48-61` |
 | B 访存 retiming | `B/.../core/mem_wr_buffer.v:40-50`；新增级 `B/.../top/MEM_BUFFER.v`+`RISCV.v:245-268` |
 | B 两级前递 | `B/.../top/RISCV.v:112-119` + `core/gpr.v:44-54` |
