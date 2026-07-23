@@ -29,6 +29,9 @@ foreach ($name in $projects) {
         continue
     }
 
+    if ([Regex]::IsMatch($xprText, '<Project\b[^>]*\sPath="')) {
+        $errors.Add("[$name] XPR root contains a machine-specific project Path attribute")
+    }
     if ($xprText.Contains('sources_1/new/') -or $xprText.Contains('rtl_full')) {
         $errors.Add("[$name] XPR contains a retired source-tree path")
     }
@@ -52,6 +55,19 @@ foreach ($name in $projects) {
         }
     }
 
+    $wcfgMatches = [Regex]::Matches($xprText, '<Option Name="XSimWcfgFile" Val="([^"]+)"')
+    foreach ($match in $wcfgMatches) {
+        $xprFile = $match.Groups[1].Value
+        $resolved = $xprFile.Replace('$PSRCDIR', $sourceDir).Replace('$PPRDIR', $projectDir)
+        if ($resolved.Contains('$')) {
+            $errors.Add("[$name] unresolved XSimWcfgFile variable: $xprFile")
+            continue
+        }
+        $resolved = [IO.Path]::GetFullPath($resolved.Replace('/', [IO.Path]::DirectorySeparatorChar))
+        if (-not (Test-Path -LiteralPath $resolved)) {
+            $errors.Add("[$name] missing XSimWcfgFile: $xprFile")
+        }
+    }
     $unreferencedRtl = @(
         Get-ChildItem -LiteralPath $rtlDir -Recurse -File |
             Where-Object { $_.Extension -in @('.v', '.sv', '.vh') -and -not $referencedFiles.Contains($_.FullName) }
@@ -61,7 +77,7 @@ foreach ($name in $projects) {
         $errors.Add("[$name] RTL is not listed in XPR: $relative")
     }
 
-    Write-Host "[$name] XML valid; $($matches.Count) XPR file references; $(@(Get-ChildItem -LiteralPath $rtlDir -Recurse -File).Count) RTL files"
+    Write-Host "[$name] XML valid; $($matches.Count) XPR file references; $($wcfgMatches.Count) waveform config; $(@(Get-ChildItem -LiteralPath $rtlDir -Recurse -File).Count) RTL files"
 }
 
 $archiveRoot = Join-Path $repoRoot '_archive_restore_only'

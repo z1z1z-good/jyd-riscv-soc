@@ -1,35 +1,49 @@
 # JYD RISC-V SoC 分析要点速记
 
-> 当前路径：200M/250M 的有效 CPU 已统一为 `digital_twin.srcs/sources_1/rtl/cpu`；文中的 `rtl_full2` 是历史架构称呼，旧目录实物保存在 `_archive_restore_only/source-98f3aab/`。
-
-> 从分析记忆中摘出的 JYD 技术要点(已脱敏:不含其它项目、内网信息、私密内容)。完整内容见 `study_riscv_soc_family.md`。
+> 当前路径：200M/250M 的有效 CPU 统一位于 `digital_twin.srcs/sources_1/rtl/cpu`；`rtl_full2` 是历史称呼，旧树在 `_archive_restore_only/source-98f3aab/`。
 
 ## 工程集
-`D:\JYD` = 集创赛 JYD2025「数字孪生」赛道 RISC-V SoC 工程集(内核 tinyriscv 派生)。5 个工程:
-- `JYD2025_Contest-Template0003`(赛方基线,自带部分 FPU) — 活动核 `rtl_full2/RISCV`;另挂遗留核 `rtl_full/RISCV_CORE`(RV32IM+CSR+CLINT,被 .xpr 排除=死码)。
-- `five_level_200MHz_with_all_branch`(=A)、`five_level_area_250M`(=B) — 数字孪生工程,顶层 `student_top`。
-- `riscv_coremark` + `riscv_coremark1` — 内核抽出跑分版,两者仅 rom.v 的 readmemh 路径不同,近乎重复。
 
-## A vs B 核心结论
-- **A**:5 级 + 锦标赛预测器(Gshare+Bimodal+CPT 选择器),CPU 实 150MHz、WNS+0.865(稳)、LUT5482/FF4111/BRAM16。
-- **B**:7 级(if_id 寄存指令 + 新增 MEM_BUFFER 级)+ 单表 Bimodal,CPU 250MHz、WNS+0.035(压线)、LUT4448/FF2622/BRAM64。
-- **B 提频关键 = retiming**:`mem_wr_buffer.rd_data_o` 组合→寄存 + MEM_BUFFER 打拍,切开访存读长链(时序最差路径落在 mem_wr_buffer_inst,logic 2.015ns)。
+- `JYD2025_Contest-Template0005`：赛方模板支线，含部分 FPU；本轮未复核。
+- `five_level_200MHz_with_all_branch`（A）与 `five_level_area_250M`（B）：活动工程顶层均为 `top`，层次为 `top → student_top → RISCV`。
+- `riscv_coremark` / `riscv_coremark1`：CoreMark 支线，仍缺原 `final.hex`；本轮未复核其流水级数。
 
-## 命名 / 结构坑(易误判,已核验)
-1. 文件夹名 `"200MHz"` 是**板载差分输入钟**,CPU 真时钟是 PLL `clk_out2_pll`——A=150MHz、B=250MHz。
-2. `IF2_UNIT` 在 A 的 `top/RISCV.v:142-152` 是**注释死码**(grep 会误匹配成六级),A 实为 5 级;真正的深流水是 B。
-3. `Gshare/` 目录下小写叶子模块(ghr/pht/btb/arbitration/global_predictor)两版都是**未例化死码**,真正生效的是 `top/` 大写模块。
-4. B 的 BRAM 16→64 是主 RAM `blk_mem_gen_0` 深度 16K→64K **扩容**(容量升级,非时序优化)。
+## A / B 已复核结论
 
-## 模板基线要点
-- 活动核 rtl_full2 = 纯 5 级 IF/ID/EX/MEM/WB,**无预测/无 IF2/无写缓冲**,分支 EX 段解析冲刷。
-- **FPU 是活的**:cu.v 真例化 normalizer/rounding + 双寄存器堆(整数 u_int + 浮点 u_float),部分单周期 F(FADD/FSUB.S/FMV.S.X/FLW/FSW)。→ A/B 删 FPU 是砍功能非清死码。
-- 活动核**无硬件 M**(0 个 mul/div 模块 + 综合 DSP=0)→ CoreMark 走软件乘除;硬件 M 只在被排除的遗留核 rtl_full。
-- 模板 `test.hex` 在仓 `imports/test_src`,故**模板可仿真**(不像 coremark 缺固件)。
+- **A**：5 级 IF/ID/EX/MEM/WB；CPU 150 MHz；历史 WNS +0.865 ns、LUT5482/FF4111/BRAM16。
+- **A 预测器**：Gshare 风格全局分量+Bimodal 分量+CPT，只有两套 BTB64。GBHR 寄存器声明 10 bit，但 PHT64 索引实际只用低 6 bit。只预测条件分支，JAL/JALR 在 EX 重定向。
+- **B**：6 级 IF/ID/EX/BUFFER/MEM/WB，不是 7 级；CPU 250 MHz；历史 WNS +0.035 ns、LUT4448/FF2622/BRAM64。
+- **B 预测器**：单一 Bimodal 方向 PHT64×2b + BTB64，无全局/局部历史。“单表”仅指方向表。
+- **B 访存时序**：`MEM_BUFFER` 锁存 EX 控制/地址/store 数据；主存返回数据在 `mem_wr_buffer.rd_data_o` 寄存。历史最差路径与该寄存点吻合，但不能据此把 250 MHz 完全归因于单一 retiming 动作。
+- **冒险**：A 是 EX/MEM/WB 三源前递；B 是 EX/MBEM/MEM/WB 四路前递，并有 `load_use/load_any_use` 两阶段检测。两者分支均在 EX 解析，结构性冲刷约 2 拍，精确罚拍尚未仿真。
 
-## CoreMark 本机现状
-固件 `final.hex` 缺失(rom.v 载 `D:\final.hex` 不存在;coremark1 指向别人桌面路径)+ 无 RISC-V GCC 工具链 + `tb_top.v` 是裸时钟/复位壳无评分读出 → 本机跑不出分。Vivado 2023.2 设计套件 + xsim 在 `D:\Vivado\Vivado\2023.2`。
+## 命名与结构坑
+
+1. `200MHz` 是板载差分输入钟，A CPU 实际为 150 MHz；B CPU 为 250 MHz。
+2. A 的 `RISCV.v:142-152` 只有 IF2 注释例化，当前活动树没有 `IF2_UNIT.v`。
+3. B 的 IROM 是异步、零流水，`if_id` 不是第二个取指寄存级；B 只比 A 多一个 `MEM_BUFFER` 级。
+4. 历史 `Gshare/`、`rtl_full` 等死码已移入归档，不应重新加入活动 XPR。
+5. A 数据 RAM 是 16384 words×32 = 64 KiB；B 是 65536 words×32 = 256 KiB。BRAM 16→64 主要是扩容。
+6. A/B 的有效 IROM/DRAM 都使用工程内 `irom.coe/dram.coe`，不依赖 `D:\final.hex`。
+
+## 已知限制
+
+- A 的 load-use case 漏掉 rs1、rs2 同时命中 load 目的寄存器的 `2'b11`。
+- A/B 的 BTB tag 参数宽度与 `[14:8]` 切片不一致；当前 16 KiB IROM 中高位恒零，扩展地址空间前需修正。
+- A `GLOBAL_PREDICTOR`、B `EX_UNIT` 有声明顺序 Vivado warning。
+- A counter 的 150 MHz→50 MHz 控制路径未见显式 CDC。
+- B `MEM_BUFFER` 的 `_hypass` 端口在当前实例中未连接。
+- 预测命中率、IPC、CoreMark、精确罚拍与极限 Fmax 都没有本轮实测数据。
+
+## 验证状态
+
+- 两个 XPR 的活动文件、IP/COE、编译序与归档隔离检查通过。
+- Vivado 2023.2 可在临时副本打开工程、识别顶层/器件/IP；A 的三个 IP output products 已成功生成。
+- 尚未完成管理后工程的完整 `synth_1`、implementation、bitstream 或自检仿真。
+- `reports/200M`、`reports/250M` 是整理前的历史实现证据，不等价于当前工程已重综合。
 
 ## 环境备忘
-- `unzip` 对 `D:/…` 路径报 "cannot find or open"(Info-ZIP 把 `:` 当 host:archive)→ 列 zip 内容改用 Python `zipfile`,须 `PYTHONUTF8=1`(源码/路径含中文)。
-- 分析方法:实现报告(硬数据) + Read/Grep 亲验 RTL + 并行子代理交叉验证;注意 grep 会命中**注释块内**的模块名,务必 Read 上下文辨死活。
+
+- Vivado 2023.2：`D:\Vivado\Vivado\2023.2`。
+- 提交前运行：`powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\check-projects.ps1`。
+- Grep 会命中注释和归档文件；技术结论必须结合活动 XPR、实例层次和 RTL 上下文。

@@ -1,147 +1,190 @@
-# RISC-V SoC 严肃对比报告：五级流水 A vs 深流水 B
+# RISC-V SoC 对比复核：五级 A 与六级 B
 
-> **对比对象**
-> - **A = `five_level_200MHz_with_all_branch`**（5 级流水 + 全套锦标赛分支预测）
-> - **B = `five_level_area_250M`**（深流水 7 级 + 单表预测 + 面积优化）
+> 对比对象：
 >
-> **同一 tinyriscv 派生核的两个分支。** 结论均经「实现报告实测 + RTL 亲自核验 + 两个独立分析代理交叉验证」三重确认。
-> 生成日期：2026-07-03。器件：Kintex-7 类（203800 LUT / 407600 FF / 445 BRAM / 840 DSP）。
+> - A：`five_level_200MHz_with_all_branch`，5 级、两分量锦标赛预测器、CPU 150 MHz。
+> - B：`five_level_area_250M`，6 级、单一 Bimodal 方向表 + BTB64、CPU 250 MHz。
+>
+> 2026-07-23 复核：两个独立审计分别检查管理后的 A/B，并在仓库外临时副本调用 Vivado 2023.2。本文区分“RTL 静态确认”“历史 routed report”与“尚未实测”。
 
 ---
 
-## 0. 总定性 + 一处关键更正
+## 0. 先给出关键更正
 
-- **更正**：A 交付版**不是六级**。`IF2_UNIT` 在 `RISCV.v(A):142-152` 被**整段注释**，`ID_UNIT` 直接吃 `if_ins_o`；`if_id.v(A):67-69` 指令字**组合直通**（注释明写「ROM 已延迟一拍，无需再延」）。→ **A 是标准 5 级**（文件夹名 "five_level" 反而准确）。真正"多打一拍提时序"的更深流水是 **B**。
-
-- **精确级数**：
-
-  | | 取指 | 译码 | 执行 | 访存 | 写回 | 级数 |
-  |---|---|---|---|---|---|---|
-  | **A** | ROM 寄 | ID | EX | MEM | WB | **5 级** |
-  | **B** | ROM 寄 → **if_id 寄(新)** | ID | EX | **MEM_BUFFER(新)** → MEM | WB | **7 级** |
-
-- **一句话**：**A = 全套锦标赛预测器 + 浅流水**，主频被"预测器→PC"组合回路锁死在 **150 MHz**；**B = 砍成单表预测器 + 加深 2 级流水（切开访存关键路径）**，换到 **250 MHz** 且逻辑面积更小，代价是 IPC（预测变弱、load +1 拍、误预测冲刷 +1 拍）和时序余量（压线）。
+1. A 是 5 级，这一点成立；IF2 只有注释例化，当前活动树没有 `IF2_UNIT.v`。
+2. B 是 **6 级 IF/ID/EX/BUFFER/MEM/WB**，不是旧文档所写的 7 级。B 的 IROM 是异步、零流水，`if_id` 不是建立在另一个“ROM 输出寄存级”之后。
+3. B 的 `MEM_BUFFER` 是真实整级，但锁存的是 EX 控制、地址、store 数据和写回信息；主存返回数据的寄存点是 `mem_wr_buffer.rd_data_o`。
+4. A 有两套 BTB，不是三套；CPT 是选择器，没有自己的 BTB。
+5. A 的 GBHR 寄存器声明为 10 bit，但 64 项 PHT 的索引只保留 XOR 结果低 6 bit。
+6. 两者都在 EX 解析分支，前端均只有 IF、ID 两个年轻级；误预测损失可结构性描述为约 2 拍，旧文档的 B≈3 拍没有 RTL 支持。
+7. 预测命中率、IPC、CoreMark、精确罚拍和极限 Fmax 均未实测，不能继续使用 96%/88% 等数字。
 
 ---
 
-## 1. 总览（硬指标，全部实测/实证）
+## 1. 总览
 
-| 维度 | A（200M·全预测） | B（250M·面积） | 说明 |
+| 维度 | A（200M·全预测） | B（250M·面积/时序） | 证据等级 |
 |---|---|---|---|
-| CPU 时钟 `clk_out2_pll` | **150 MHz** | **250 MHz** | "200MHz"是板载差分输入钟，非 CPU 钟 |
-| 时序余量 WNS | **+0.865 ns**（稳） | **+0.035 ns**（压线） | B 换布线种子/温度就可能掉 |
-| 流水级数 | **5** | **7**（+2） | if_id 指令寄存 + MEM_BUFFER |
-| 误预测冲刷 | ≈2 拍 | ≈3 拍 | 分支在 EX 解析、组合回灌 PC |
-| 分支预测器 | **锦标赛** Gshare+Bimodal+CPT 选择+3×BTB | **单表** Bimodal+BTB64 | A 的 Fmax 杀手 / B 的面积来源 |
-| 方向命中率（定性） | ~92–96% | ~85–90% | 无全局历史→丢分支相关性 |
-| Slice LUTs | 5482 | **4448（−19%）** | 砍预测器 |
-| Slice Registers(FF) | 4111 | **2622（−36%）** | 砍锦标赛状态 + 简化 hold |
-| Block RAM tile | 16 | **64（+300%）** | **扩容**，非时序需要（见 §6） |
-| 片上功耗 | 0.45 W | 0.54 W（+20%） | 高频 + 多 48 块 BRAM |
-| CPU 域瓶颈 | PC/取指，**布线主导(route 91%)** | 访存写缓冲，**逻辑主导(logic 51%)** | 性质相反 |
+| CPU 时钟 | 150 MHz | 250 MHz | PLL XCI + 历史 routed report |
+| 输入时钟 | 200 MHz | 200 MHz | PLL XCI/XDC |
+| 历史 WNS | +0.865 ns | +0.035 ns | `reports/{200M,250M}` |
+| 流水级数 | 5 | 6（多一个 BUFFER） | 活动 RTL 寄存边界 |
+| 分支预测 | Gshare 风格+Bimodal+CPT，2×BTB64 | Bimodal PHT64×2b + BTB64 | 活动 RTL |
+| 全局历史 | 10-bit 寄存器，实际低 6 bit参与索引 | 无 | 活动 RTL |
+| 误预测冲刷 | 结构推断约 2 拍 | 结构推断约 2 拍 | 未做周期仿真 |
+| 前递 | EX/MEM/WB 三源 | EX/MBEM/MEM/WB 四路 | 活动 RTL |
+| 数据 RAM | 16384 words×32 = 64 KiB | 65536 words×32 = 256 KiB | XCI |
+| Slice LUT / FF | 5482 / 4111 | 4448 / 2622 | 历史实现报告 |
+| BRAM tile | 16 | 64 | 历史实现报告 |
+| 功耗 | 0.45 W | 0.54 W | 历史功耗报告 |
+
+“200M”指工程名和板载差分输入钟；A 的 CPU 并不是 200 MHz。历史 WNS/资源/功耗来自整理前一次 routed build，尚未用管理后的工程重新实现。
 
 ---
 
-## 2. 流水线结构（修正版 + 证据）
+## 2. 流水线结构
 
+```text
+A（5级）
+IF（同步 ROM 输出） → ID → EX → MEM → WB
+       if_id          id_ex  EX寄存  MEM寄存  GPR写入
+
+B（6级）
+IF（异步 IROM） → ID → EX → BUFFER → MEM → WB
+       if_id      id_ex  EX寄存  MEM_BUFFER  MEM寄存  GPR写入
 ```
-A(5级):  IF ─[ROM寄]─ if_id(addr寄/ins组合) ─ ID ─[id_ex]─ EX ─[EX寄]─ MEM(mem+mem_wr_buffer组合前推) ─[MEM寄]─ WB
-                 bpu 锦标赛预测器 ── 全组合 ──▶ PC   ← 200M 的真正限频点
 
-B(7级):  IF ─[ROM寄]─[if_id ins也寄(=折入IF2)]─ ID ─[id_ex]─ EX ─[EX寄]─【MEM_BUFFER 新增级】─ MEM(mem_wr_buffer读转发改寄存) ─[MEM寄]─ WB
-                 AREA 单表预测器 ─ 组合(短) ─▶ PC
-```
+A：
 
-**证据（亲自核验）**：
-- IF2 被注释：`RISCV.v(A):142-152` 是 `/* … */`；`ID_UNIT` 取 `if_ins_o`（A:158）。
-- 指令字 A 组合 / B 寄存：`if_id.v(A):67-69` `always@(*)` vs `if_id.v(B):48-61` `ins_o<=ins_i`（旧组合式 64-66 被注释）。
-- MEM_BUFFER 是真级：`RISCV.v(B)` 例化序 EX(212)→**MEM_BUFFER(245)**→MEM_UNIT(269)→WB(297)，且它对**所有指令**打拍（`MEM_BUFFER.v:47-54`）。
+- `dist_mem_gen_1` 的输出是 registered；`if_id` 只寄存地址，指令字使用 ROM 已寄存输出。
+- `RISCV.v:142-152` 的 IF2 例化处于注释中，`ID_UNIT` 直接接 `if_ins_o`。
+- EX 结果在 `EX_UNIT` 寄存，MEM 结果在 `MEM_UNIT` 寄存，WB 为组合直通后在 GPR 写入边沿提交。
 
-> **关键洞察**：通常"加深流水"是提频手段，但 A 明明更浅却更慢——因为 **A 的限频点不是流水深度，而是锦标赛预测器挂在 PC 组合回路上**。B 反其道：既砍预测器（缩短 PC 回路）、又加深流水（切访存长链），两头一起上才拿到 250 MHz。
+B：
+
+- `IROM.xci` 明确为 `non_registered`、`Pipeline_Stages=0`、`C_HAS_CLK=0`。
+- `if_id` 是取指后的第一道寄存边界。
+- `MEM_BUFFER` 位于 EX 和 MEM 之间并对所有指令控制打一拍，因此 B 比 A 多一个级，而不是两个。
 
 ---
 
-## 3. "神奇提时序"的机理：MEM_BUFFER + 读转发寄存化（本质 = retiming）
+## 3. 访存时序改造
 
-**A 的访存读回是一条组合长链**（4ns 塞不下）：
-```
-BRAM读出 →[mem_wr_buffer: 30bit地址比较 + store-to-load mux, 组合(A):39-49]→ mem.v字节/符号扩展 → 下游写回
-```
-**B 切了两刀**：
-1. `mem_wr_buffer.rd_data_o` **组合→寄存**（`mem_wr_buffer.v(B):40`），并补"同拍写读旁路"（:41）保正确性；
-2. 新增 **MEM_BUFFER 整级**（`RISCV.v(B):245-268`），把主存返回数据 + 全部写回控制提前一拍锁存。
+A 的 `mem_wr_buffer`：
 
-**为什么"神奇"——不是玄学是教科书 retiming**：把一条 ~5.5ns 的组合链中间插一个触发器劈成两半，单路径 Fmax 近乎翻倍。**时序报告是铁证**：B 最差路径终点 = `mem_wr_buffer_inst/rd_data_o_reg[9]/D`，**logic 仅 2.015ns（5 级 LUT）**，slack **+0.035ns**——刚好卡进 4ns。
+- store 请求先寄存一拍；
+- 读返回与同地址 store-to-load 旁路为组合逻辑。
 
-**代价**：load-use 延迟 +1 拍 → B 补了**两级前递**（`RISCV.v(B):112-119` 的 `ex_bypass`/`mbem_bypass`）+ MEM_BUFFER 的 `_hypass` 旁路端口来补偿。用 1 拍 load 延迟买 +67% 主频。
+B 的变化：
 
----
+1. `MEM_BUFFER` 锁存 EX 的控制、地址、store 数据和写回信息；
+2. `mem_wr_buffer.rd_data_o` 在时钟沿寄存主存返回数据；
+3. `MEM_UNIT` 再完成 load 扩展并锁存写回数据。
 
-## 4. 分支预测：锦标赛 → 单表
+历史 250M timing report 的最差路径终点是 `mem_wr_buffer_inst/rd_data_o_reg/D`，说明读链寄存化确实位于关键路径上。但 B 同时改变了预测器、流水深度、RAM 容量和实现条件，不能仅凭 A/B 两份报告量化“单路径 Fmax 翻倍”，也不能把 250 MHz 完全归因于单一 retiming 动作。
 
-| | A（200M） | B（250M） |
-|---|---|---|
-| 结构 | **锦标赛**：GLOBAL(Gshare, GBHR 10bit, PHT64×2b, idx=`pc^GBHR`) + AREA(Bimodal, idx=`pc[7:2]`) + **CPT 选择器**(64×2b) + 各带 BTB64 | **仅 AREA**(Bimodal BTB64+PHT64×2b)；`bpu.v`/`CPT.v` **已删**，`GLOBAL_PREDICTOR` 在 `RISCV.v(B):135-147` 注释成死码 |
-| 全局历史 | 有（捕获分支间相关性） | **无** |
-| 命中率（定性） | ~92–96% | ~85–90% |
-| 附注 | `Gshare/` 目录下小写叶子模块(ghr/pht/btb/…)两版**字节相同且都是死码**，真正生效的是 `top/` 大写模块 |
-
-> A 把 GLOBAL/AREA/CPT 三者**全组合**汇进 PC 重定向 → 这就是 A 卡 150 MHz 的根因（时序报告里 A 的 CPU 域最差路径正落在 PC/取指、且 route 占 91% 高扇出）。B 砍成单表 = 同时买到"缩短 PC 回路（提频）"和"减面积"。
+`MEM_BUFFER` 定义了 `_hypass` 输出，但当前 `RISCV` 实例没有连接这些端口；旧文档“靠 `_hypass` 补偿 load”的说法错误。
 
 ---
 
-## 5. 冒险 / 前递对比
+## 4. 分支预测
+
+### A：两分量锦标赛
+
+- `GLOBAL_PREDICTOR`：64×2-bit PHT + BTB64；索引是 `pc[7:2] XOR GBHR` 的低 6 bit。
+- GBHR 物理寄存器为 10 bit，但当前 PHT 深度只让低 6 bit参与索引。
+- `AREA_PREDICTOR`：按 PC 索引的 64×2-bit Bimodal PHT + BTB64，没有 local history table。
+- `CPT`：64×2-bit 选择器，只在两个分量预测不同时训练；MSB 选择全局或 Bimodal 分量。
+- 合计两套 BTB；CPT 没有 BTB。
+
+### B：单一方向表
+
+- 方向预测为 PC 索引的 64×2-bit Bimodal PHT；
+- 目标来自 direct-mapped BTB64，并有 tag/valid；
+- 没有 GHR/LHR。
+
+所以“单表”只能解释为“单一方向预测表”，不能理解为整个预测器只有一个数组。
+
+两者都只预测条件分支；JAL/JALR 在 EX 无条件重定向。条件分支修正主要比较 taken/not-taken 方向，没有独立的 BTB target-mismatch 比较。预测精度百分比必须通过分支计数仿真获得，本仓库当前没有这类实测数据。
+
+---
+
+## 5. 冒险、前递与已知 RTL 限制
 
 | 机制 | A | B |
 |---|---|---|
-| 前递源 | 3 路(EX/MEM/WB)，**地址比较在 `gpr.v` 内**(读口路径长) | **4 路**(多 MBEM 一路)，**比较上提到 `RISCV.v(B):112-119`**，gpr 只留优先 mux |
-| load-use 停顿 | `cu.v(A):298-316` 内联大 case | 迁到 `EX_UNIT(B):66-72` 产 `load_use`，`cu.v(B)` 末端 OR（缩短 cu 路径） |
-| hold 粒度 | **3bit 分级**(HOLD_PC/IF_ID/ID_EX) | **1bit** 统一 |
-| 分支修正 | 手写 `(~jf&pt)\|(jf&~pt)` | `jump_flag ^ predict_taken`（等价、更简） |
+| 前递源 | EX→MEM→WB 三源 | EX→MBEM→MEM→WB 四路 |
+| load 冲突 | `cu` 内 load-use case | `EX_UNIT` 的 `load_use/load_any_use` 两阶段检测 |
+| hold/冲刷 | 3-bit 分级编码 | 1-bit 统一信号 |
+| 分支方向修正 | 逻辑展开 | `actual_taken XOR predict_taken` |
 
-均为"把组合比较从窄路径里挪出来 + 简化控制编码"的时序导向改写。
+已知限制：
 
----
-
-## 6. 面积 / 功耗 / 存储（纠正 "area" 叙事）
-
-- **逻辑面积确实降**：LUT −19%、FF −36%（FF 大降 = 砍锦标赛状态 + hold 3→1bit + 去 rib/int 端口）。
-- **但 BRAM 反而 +300%**：主数据 RAM `blk_mem_gen_0` 深度 **16K→64K(×4)**（64K×32≈64 tile，正好对上），另删 2 块分布式 RAM、`DRAM` 32K→16K。**这是容量扩张，不是时序/面积优化。**
-- **功耗升**：高频(150→250) + 多出的 48 块 BRAM → 0.45→0.54 W。
-- 结论：**"area" 指逻辑/流水线面积；存储子系统反而更大。** B 不是"低功耗"方案。
+- A 的 load-use `case` 只覆盖 `2'b10` 和 `2'b01`，漏掉 rs1、rs2 同时等于 load 目的寄存器的 `2'b11`。
+- A/B 的 `BTB_TAG_WIDTH` 参数为 6 bit，但 RTL 写入/比较 `pc[14:8]` 七位；当前 16 KiB IROM 中高位恒零，扩大地址空间前必须统一。
+- A 的 `GLOBAL_PREDICTOR` 和 B 的 `EX_UNIT` 存在声明顺序 Vivado warning。
+- A 的 counter 控制从 150 MHz CPU 域进入 50 MHz 域，未见显式同步/握手。
+- store→load、连续 load-use、BTB alias/目标错误仍需定向仿真。
 
 ---
 
-## 7. 性能权衡（频率 × IPC）
+## 6. 面积、存储与功耗
 
-`MIPS = Fmax × IPC`。B 相对 A：
-- **Fmax：+67%**（150→250）。
-- **IPC：降**，三个来源叠加——①预测命中率 96%→~88%（误预测率近翻倍）、②load 延迟 +1 拍、③误预测冲刷 2→3 拍。
-- **净账**：CoreMark 分支占比 ~12–16%、load 占比 ~20–25%。除非负载分支/访存**极端密集**，+67% 的频率通常盖过个位数~十几 % 的 IPC 损失 → **B 的绝对性能(MIPS/CoreMark)大概率更高**。
-- **鲁棒性**：A 时序余量 +0.865ns（**稳**，可移植/超频有空间）；B 仅 +0.035ns（**脆**，压线，换器件批次/温度/布线种子有掉出风险）。
+历史实现报告显示：
 
-> 注：本节为定性推断，尚未用实跑 CoreMark 数据验证（见文末备注）。
+- B 的 LUT 比 A 少约 19%，FF 少约 36%；
+- B 的 BRAM 从 16 tile 增到 64 tile，主要对应数据 RAM 从 64 KiB 扩到 256 KiB；
+- B 的历史功耗从 0.45 W 增到 0.54 W。
 
----
-
-## 8. 总评
-
-| | A（200M·5 级·全预测） | B（250M·7 级·面积） |
-|---|---|---|
-| 设计取向 | **高 IPC / 高预测精度**，频率与面积让步 | **高频 / 小逻辑**，IPC 与时序裕量让步 |
-| 亮点 | 锦标赛预测器完整、时序余量大、鲁棒 | retiming 切访存关键路径漂亮、逻辑精简、Fmax 高 |
-| 隐患 | 预测器锁死 Fmax；逻辑最大 | 压线时序脆；BRAM/功耗涨；预测弱 |
-| 适合 | 演示预测器效果、追求稳定/可移植 | 冲 CoreMark 分数/主频指标 |
-
-**实操建议**：若冲分，B 的方向对，但 **+0.035ns 太险**——建议给 B 的 `clk_out2_pll` 留一档（如 230–240 MHz）换回正的余量；或把 A 的锦标赛预测器**移植进 B 的深流水**（B 多出的取指拍可容纳预测器查表），做一个"深流水 + 强预测 + 切访存"的合并版，大概率比现有两个都强。
+因此 `area` 更接近“逻辑精简”而不是“总存储/功耗都更小”。这些数字是不同结构、不同目标频率的两次历史实现结果，不是控制变量实验。
 
 ---
 
-### 附：证据文件锚点（关键位点）
-- IF2 注释：`_archive_restore_only/source-98f3aab/five_level_200MHz_with_all_branch/.../new/rtl_full2/top/RISCV.v:142-152`
-- 指令字组合↔寄存：`.../core/if_id.v:67-69`（A） vs `five_level_area_250M/.../core/if_id.v:48-61`（B）
-- 访存切拍：`five_level_area_250M/.../core/mem_wr_buffer.v:40-50`
-- 新增缓冲级：`.../top/MEM_BUFFER.v` + `.../top/RISCV.v:245-268`
-- 两级前递：`.../top/RISCV.v:112-119` + `.../core/gpr.v:44-54`
-- 锦标赛预测器：`five_level_200MHz_with_all_branch/.../top/{bpu.v, CPT.v, GLOBAL_PREDICTOR.v, AREA_PREDICTOR.v}`
-- 实现数据：各工程 `digital_twin.runs/impl_1/{top_utilization_placed.rpt, top_power_routed.rpt, top_timing_summary_routed.rpt, runme.log}`
+## 7. 性能结论的边界
+
+可以确认：
+
+- A 的 PLL 配置为 150 MHz，B 为 250 MHz；
+- A 的预测器更复杂，B 的流水多一个 BUFFER 级；
+- B 的历史时序余量只有 +0.035 ns。
+
+不能确认：
+
+- A/B 的极限 Fmax；
+- 预测命中率；
+- 精确误预测罚拍、load CPI 代价；
+- CoreMark 或 MIPS 谁更高。
+
+因此不再使用“B 大概率净胜”“A 被预测器锁死在 150 MHz”等结论。若要严肃比较，必须使用同一固件、同一约束/器件策略，分别完成仿真或上板计数以及实现扫描。
+
+---
+
+## 8. 验证状态与建议
+
+本轮已完成：
+
+- 两个 XPR 的 XML、文件存在性、活动 RTL 收录和归档隔离检查；
+- Vivado 2023.2 在仓库外临时副本中打开工程、识别顶层/器件/IP并建立编译序；
+- 200M 三个 IP 的 output products 成功重新生成；
+- 对流水边界、预测器、冒险、PLL、IROM/DRAM XCI 和历史报告逐行交叉核对。
+
+尚未完成：整理后的完整 `synth_1`、implementation、bitstream、自检仿真和动态性能测试。现有 `top_tb` 也不是完整自检 testbench。
+
+建议后续顺序：
+
+1. 先修复声明顺序、BTB tag 宽度和 A 的 load-use `2'b11`；
+2. 增加 load/store、连续分支和 BTB alias 的定向自检；
+3. 用同一固件统计预测命中率/CPI；
+4. 在统一约束下扫描频率，再讨论合并 A 预测器与 B 访存结构；B 当前没有可直接复用的“额外取指拍”，若组合回路不收敛应显式新增预测级。
+
+### 关键证据锚点
+
+- A IF2 注释：`five_level_200MHz_with_all_branch/digital_twin.srcs/sources_1/rtl/cpu/top/RISCV.v:142-152`
+- A 预测器：`five_level_200MHz_with_all_branch/digital_twin.srcs/sources_1/rtl/cpu/top/{bpu,CPT,GLOBAL_PREDICTOR,AREA_PREDICTOR}.v`
+- A IROM：`five_level_200MHz_with_all_branch/digital_twin.srcs/sources_1/ip/dist_mem_gen_1/dist_mem_gen_1.xci:19-26`
+- B IF 边界：`five_level_area_250M/digital_twin.srcs/sources_1/rtl/cpu/core/if_id.v:48-60`
+- B 异步 IROM：`five_level_area_250M/digital_twin.srcs/sources_1/ip/IROM/IROM.xci:14,19-20,42,61`
+- B BUFFER：`five_level_area_250M/digital_twin.srcs/sources_1/rtl/cpu/top/MEM_BUFFER.v:35-55`
+- B 读返回寄存：`five_level_area_250M/digital_twin.srcs/sources_1/rtl/cpu/core/mem_wr_buffer.v:40-50`
+- B 四路前递：`five_level_area_250M/digital_twin.srcs/sources_1/rtl/cpu/top/RISCV.v:112-119`
+- 历史实现数据：`reports/200M/`、`reports/250M/`
