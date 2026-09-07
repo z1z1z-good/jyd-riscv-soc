@@ -1,5 +1,7 @@
 # JYD 集创赛 RISC-V SoC 工程族 · 归档仓
 
+**重新学习与考研复试入口：**[JYD 分章研究文档](D:/codex_prj/fpga_dick/jyd-riscv-soc/docs/research/README.md)。从五级关键知识恢复到两版 RTL、冒险逐周期推演、预测器、时序证据、改进路线和复试问答；附历史纠错与未来实验清单。研究基线为 `bfd0e14`，仅做静态文书研究，未重新仿真或综合。下方旧研究底稿保留供追溯。
+
 `D:\JYD` 下 5 个 Vivado 工程的**源码级归档 + 完整技术分析**。
 构建产物（原 4.7 GB 的 Xilinx 仿真库 / IP 缓存 / 综合结果，**全部可再生**）已用 `.gitignore` 排除；clone 回来后用 Vivado 从 `.xpr` 重新生成即可。归档日期 2026-07-03。
 
